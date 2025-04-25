@@ -11,22 +11,7 @@ body {
     color: #fff;
 }
 
-.logo-container {
-    height: 50px; /* Fixed container height */
-    display: flex;
-    align-items: center;
-    margin-right: 20px; /* Space between logo and nav */
-}
-
-.logo-image {
-    height: 40px; /* Fill container height */
-    width: 40px; /* Maintain aspect ratio */
-    max-width: 150px; /* Prevent too wide logos */
-    object-fit: contain;
-    filter: brightness(0) invert(1); /* Makes black logo white */
-}
-
-/* Keep all your existing styles below */
+/* Header */
 .header {
     display: flex;
     justify-content: space-between;
@@ -34,6 +19,17 @@ body {
     padding: 1rem 2rem;
     background-color: #0e0e0e;
     border-bottom: 2px solid #2a2a2a;
+}
+
+.logo-container {
+    height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+.logo-image {
+    height: 40px;
+    width: auto;
 }
 
 .nav {
@@ -105,6 +101,7 @@ body {
     border-radius: 8px;
     text-align: center;
     transition: transform 0.3s;
+    cursor: pointer;
 }
 
 .game-card:hover {
@@ -120,4 +117,102 @@ body {
     margin-top: 2rem;
     font-size: 0.9rem;
     opacity: 0.7;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #1a1a1a;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    border: 2px solid #333;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    color: #fff;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-modal:hover {
+    color: #ff5722;
+}
+
+/* Slots Styles */
+.slots-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.slots-reel {
+    width: 80px;
+    height: 80px;
+    background: #fff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    color: #000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.slots-controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.slots-balance {
+    margin: 15px 0;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.slots-result {
+    min-height: 24px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #ffcc00;
+}
+
+#spin-btn {
+    background: #ff5722;
+    transition: all 0.3s;
+}
+
+#spin-btn:hover {
+    background: #ff7043;
+    transform: scale(1.05);
+}
+
+/* Animation */
+@keyframes spin {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-1000px); }
+}
+
+.spinning {
+    animation: spin 0.5s cubic-bezier(0.1, 0.7, 0.1, 1) infinite;
 }
