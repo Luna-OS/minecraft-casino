@@ -188,14 +188,6 @@ body {
     border: 1px solid #00ff00;
     position: relative;
     box-shadow: 0 0 30px rgba(0,255,0,0.2);
-    transform: scale(0.9);
-    opacity: 0;
-    transition: all 0.3s;
-}
-
-.modal-overlay.active .modal-content {
-    transform: scale(1);
-    opacity: 1;
 }
 
 .close-modal {
@@ -227,7 +219,6 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     margin: 20px 0;
-    perspective: 1000px;
 }
 
 .slots-reel {
@@ -243,29 +234,6 @@ body {
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     position: relative;
     overflow: hidden;
-    transform-style: preserve-3d;
-}
-
-.slots-reel::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
-    z-index: 2;
-}
-
-.slots-reel::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
-    z-index: 2;
 }
 
 .slots-controls {
@@ -291,14 +259,10 @@ body {
     font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .bet-btn:hover {
     background: #444;
-    transform: scale(1.1);
 }
 
 .current-bet {
@@ -332,21 +296,6 @@ body {
     border: none;
     text-transform: uppercase;
     letter-spacing: 1px;
-    position: relative;
-    overflow: hidden;
-    margin-top: 10px;
-}
-
-#spin-btn::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: rgba(255,255,255,0.1);
-    transform: rotate(45deg);
-    transition: all 0.3s;
 }
 
 #spin-btn:hover {
@@ -355,53 +304,23 @@ body {
     box-shadow: 0 5px 15px rgba(255,87,34,0.4);
 }
 
-#spin-btn:disabled {
-    background: #666;
-    cursor: not-allowed;
-    transform: none;
-}
-
-#spin-btn:hover::after {
-    left: 100%;
-}
-
 /* Animations */
-@keyframes reelSpin {
+@keyframes spin {
     0% { transform: translateY(0); }
     100% { transform: translateY(-1000px); }
 }
 
-@keyframes symbolFlash {
-    0%, 100% { 
-        transform: scale(1); 
-        box-shadow: 0 0 10px gold;
-    }
-    50% { 
-        transform: scale(1.1); 
-        box-shadow: 0 0 20px gold;
-    }
-}
-
 .spinning {
-    animation: reelSpin 0.1s linear infinite;
+    animation: spin 0.1s linear infinite;
 }
 
 .winning-symbol {
-    animation: symbolFlash 0.5s ease-in-out 3;
-    position: relative;
-    z-index: 1;
+    animation: pulse 0.5s ease-in-out 3;
 }
 
-.winning-symbol::before {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    border-radius: 12px;
-    border: 2px solid gold;
-    z-index: -1;
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 /* Responsive Design */
@@ -427,10 +346,6 @@ body {
         width: 70px;
         height: 70px;
         font-size: 35px;
-    }
-    
-    .modal-content {
-        padding: 1.5rem;
     }
 }
 
