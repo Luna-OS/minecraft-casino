@@ -15,17 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
     });
-
+    
     // Slots Game Logic
-    const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '💰', '7️⃣', '⭐'];
-    const reels = [
-        document.getElementById('reel1'),
-        document.getElementById('reel2'),
-        document.getElementById('reel3'),
-        document.getElementById('reel4'),
-        document.getElementById('reel5'),
-        document.getElementById('reel6')
-    ];
+    const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '💰', '7️⃣'];
+    const reel1 = document.getElementById('reel1');
+    const reel2 = document.getElementById('reel2');
+    const reel3 = document.getElementById('reel3');
     const spinBtn = document.getElementById('spin-btn');
     const balanceDisplay = document.getElementById('balance');
     const resultDisplay = document.getElementById('slots-result');
@@ -33,36 +28,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const increaseBetBtn = document.getElementById('increase-bet');
     const decreaseBetBtn = document.getElementById('decrease-bet');
     
-    let balance = 1000;
-    let currentBet = 50;
+    let balance = 99999; // 99.999€ Startguthaben
+    let currentBet = 10;
     let isSpinning = false;
-    let spinIntervals = [];
-
-    // Bet Controls
+    
+    // Einsatzsteuerung
     increaseBetBtn.addEventListener('click', () => {
-        if (currentBet < 500) {
-            currentBet += 50;
+        if (currentBet < 1000) {
+            currentBet += 1;
             updateBetDisplay();
         }
     });
     
     decreaseBetBtn.addEventListener('click', () => {
-        if (currentBet > 50) {
-            currentBet -= 50;
+        if (currentBet > 1) {
+            currentBet -= 1;
             updateBetDisplay();
         }
     });
     
     function updateBetDisplay() {
         betAmountDisplay.textContent = currentBet;
+        spinBtn.textContent = `Spin (${currentBet}€)`;
     }
-
-    // Spin Functionality
+    
     spinBtn.addEventListener('click', function() {
         if (isSpinning) return;
         if (balance < currentBet) {
             resultDisplay.textContent = "Nicht genug Guthaben!";
-            resultDisplay.style.color = "#f44336";
             return;
         }
         
@@ -70,135 +63,52 @@ document.addEventListener('DOMContentLoaded', function() {
         balanceDisplay.textContent = balance;
         isSpinning = true;
         resultDisplay.textContent = "";
-        resultDisplay.style.color = "#ffcc00";
         
-        // Clear any previous intervals
-        spinIntervals.forEach(interval => clearInterval(interval));
-        spinIntervals = [];
+        // Animation starten
+        reel1.classList.add('spinning');
+        reel2.classList.add('spinning');
+        reel3.classList.add('spinning');
         
-        // Start spinning animation for each reel
-        reels.forEach((reel, index) => {
-            const symbolsContainer = reel.querySelector('.symbols-container');
-            const spinDuration = 2000 + (index * 300); // Staggered stopping
-            
-            // Create temporary symbols for animation
-            symbolsContainer.innerHTML = '';
-            for (let i = 0; i < 20; i++) {
-                const symbol = document.createElement('div');
-                symbol.className = 'symbol';
-                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-                symbolsContainer.appendChild(symbol);
-            }
-            
-            // Start animation
-            let position = 0;
-            const speed = 5;
-            
-            const interval = setInterval(() => {
-                position += speed;
-                symbolsContainer.style.transform = `translateY(-${position}px)`;
-                
-                // Add more symbols if we're running out
-                if (position > symbolsContainer.children.length * 80 / 3) {
-                    const symbol = document.createElement('div');
-                    symbol.className = 'symbol';
-                    symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-                    symbolsContainer.appendChild(symbol);
-                }
-            }, 16);
-            
-            spinIntervals.push(interval);
-            
-            // Stop this reel after its duration
-            setTimeout(() => {
-                clearInterval(interval);
-                stopReel(reel, index);
-            }, spinDuration);
-        });
-        
-        // Final check after all reels stop
+        // Ergebnisse nach der Animation
         setTimeout(() => {
+            reel1.classList.remove('spinning');
+            reel2.classList.remove('spinning');
+            reel3.classList.remove('spinning');
+            
+            const result1 = symbols[Math.floor(Math.random() * symbols.length)];
+            const result2 = symbols[Math.floor(Math.random() * symbols.length)];
+            const result3 = symbols[Math.floor(Math.random() * symbols.length)];
+            
+            reel1.textContent = result1;
+            reel2.textContent = result2;
+            reel3.textContent = result3;
+            
+            checkWin(result1, result2, result3);
             isSpinning = false;
-        }, 3000);
+        }, 2000);
     });
     
-    function stopReel(reel, reelIndex) {
-        const symbolsContainer = reel.querySelector('.symbols-container');
-        const result = symbols[Math.floor(Math.random() * symbols.length)];
-        
-        // Create final display with result symbol centered
-        symbolsContainer.innerHTML = `
-            <div class="symbol">${symbols[Math.floor(Math.random() * symbols.length)]}</div>
-            <div class="symbol">${symbols[Math.floor(Math.random() * symbols.length)]}</div>
-            <div class="symbol winning">${result}</div>
-            <div class="symbol">${symbols[Math.floor(Math.random() * symbols.length)]}</div>
-            <div class="symbol">${symbols[Math.floor(Math.random() * symbols.length)]}</div>
-        `;
-        
-        symbolsContainer.style.transform = 'translateY(-160px)';
-        
-        // If this is the last reel, check for wins
-        if (reelIndex === reels.length - 1) {
-            setTimeout(() => {
-                checkWin();
-            }, 500);
-        }
-    }
-    
-    function checkWin() {
-        const results = reels.map(reel => {
-            return reel.querySelector('.winning').textContent;
-        });
-        
-        const symbolCounts = {};
-        results.forEach(symbol => {
-            symbolCounts[symbol] = (symbolCounts[symbol] || 0) + 1;
-        });
-        
-        let winAmount = 0;
-        let winningSymbols = [];
-        
-        Object.entries(symbolCounts).forEach(([symbol, count]) => {
-            if (count >= 3) {
-                const multiplier = getMultiplier(symbol);
-                winAmount += currentBet * multiplier * count;
-                winningSymbols.push(symbol);
-            }
-        });
-        
-        if (winAmount > 0) {
+    function checkWin(s1, s2, s3) {
+        if (s1 === '7️⃣' && s2 === '7️⃣' && s3 === '7️⃣') {
+            const winAmount = currentBet * 50;
             balance += winAmount;
-            balanceDisplay.textContent = balance;
+            resultDisplay.textContent = `JACKPOT! +${winAmount}€`;
+        } else if (s1 === s2 && s2 === s3) {
+            const winAmount = currentBet * 10;
+            balance += winAmount;
             resultDisplay.textContent = `GEWONNEN! +${winAmount}€`;
-            resultDisplay.style.color = "#4CAF50";
-            
-            // Highlight winning symbols
-            reels.forEach(reel => {
-                const winningSymbol = reel.querySelector('.winning');
-                if (winningSymbols.includes(winningSymbol.textContent)) {
-                    winningSymbol.classList.add('winning-animation');
-                    setTimeout(() => {
-                        winningSymbol.classList.remove('winning-animation');
-                    }, 2000);
-                }
-            });
+        } else if (s1 === s2 || s2 === s3 || s1 === s3) {
+            const winAmount = currentBet * 2;
+            balance += winAmount;
+            resultDisplay.textContent = `Kleiner Gewinn! +${winAmount}€`;
         } else {
             resultDisplay.textContent = "Kein Gewinn. Versuch's nochmal!";
-            resultDisplay.style.color = "#f44336";
         }
+        
+        balanceDisplay.textContent = balance;
     }
     
-    function getMultiplier(symbol) {
-        const multipliers = {
-            '🍒': 1,
-            '🍋': 2,
-            '🍊': 3,
-            '🍇': 5,
-            '🍉': 8,
-            '💰': 10,
-            '7️⃣': 15,
-            '⭐': 20
-        };
-        return multipliers[symbol] || 1;
-    }
+    // Initialisierung
+    balanceDisplay.textContent = balance;
+    updateBetDisplay();
 });

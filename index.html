@@ -51,37 +51,27 @@
     </footer>
 
     <!-- Slots Modal -->
-    <div class="modal-overlay" id="slots-modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Premium Slots</h2>
-            
-            <div class="slots-container">
-                <!-- 6 Walzen im 3x2 Raster -->
-                <div class="slots-reel" id="reel1"><div class="symbol">🍒</div></div>
-                <div class="slots-reel" id="reel2"><div class="symbol">🍋</div></div>
-                <div class="slots-reel" id="reel3"><div class="symbol">🍊</div></div>
-                <div class="slots-reel" id="reel4"><div class="symbol">🍇</div></div>
-                <div class="slots-reel" id="reel5"><div class="symbol">🍉</div></div>
-                <div class="slots-reel" id="reel6"><div class="symbol">💰</div></div>
+<div class="modal-overlay" id="slots-modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Premium Slots</h2>
+        <div class="slots-container">
+            <div class="slots-reel" id="reel1">🍒</div>
+            <div class="slots-reel" id="reel2">🍋</div>
+            <div class="slots-reel" id="reel3">🍊</div>
+        </div>
+        <div class="slots-controls">
+            <div class="bet-controls">
+                <button id="decrease-bet" class="btn bet-btn">-</button>
+                <div class="current-bet">Einsatz: <span id="bet-amount">10</span>€</div>
+                <button id="increase-bet" class="btn bet-btn">+</button>
             </div>
-            
-            <div class="slots-controls">
-                <div class="bet-controls">
-                    <button id="decrease-bet" class="btn bet-btn">-</button>
-                    <div class="current-bet">Einsatz: <span id="bet-amount">50</span>€</div>
-                    <button id="increase-bet" class="btn bet-btn">+</button>
-                </div>
-                
-                <button id="spin-btn" class="btn cta">SPIN</button>
-                
-                <div class="slots-info">
-                    <div class="slots-balance">Guthaben: <span id="balance">1000</span>€</div>
-                    <div id="slots-result" class="slots-result"></div>
-                </div>
-            </div>
+            <button id="spin-btn" class="btn cta">Spin (10€)</button>
+            <div class="slots-balance">Guthaben: <span id="balance">99999</span>€</div>
+            <div id="slots-result" class="slots-result"></div>
         </div>
     </div>
+</div>
 
     <script src="script.js"></script>
 </body>

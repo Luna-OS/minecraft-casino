@@ -158,35 +158,63 @@ body {
     color: #ff5722;
 }
 
-/* Neue Slots-Styles */
+/* Slots Styles */
 .slots-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
     margin: 20px 0;
-    perspective: 800px;
 }
 
 .slots-reel {
-    width: 90px;
-    height: 90px;
-    background: linear-gradient(135deg, #ffffff, #f0f0f0);
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    transform-style: preserve-3d;
-}
-
-.symbol {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 80px;
+    height: 80px;
+    background: #fff;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 50px;
-    transition: transform 0.1s;
+    color: #000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.slots-controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.slots-balance {
+    margin: 15px 0;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.slots-result {
+    min-height: 24px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #ffcc00;
+}
+
+#spin-btn {
+    background: #ff5722;
+    transition: all 0.3s;
+}
+
+#spin-btn:hover {
+    background: #ff7043;
+    transform: scale(1.05);
+}
+
+/* Animation */
+@keyframes spin {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-1000px); }
+}
+
+.spinning {
+    animation: spin 0.5s cubic-bezier(0.1, 0.7, 0.1, 1) infinite;
 }
 
 /* Bet Controls */
@@ -195,17 +223,17 @@ body {
     align-items: center;
     justify-content: center;
     gap: 15px;
-    margin: 20px 0;
+    margin: 15px 0;
 }
 
 .bet-btn {
-    width: 45px;
-    height: 45px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: #333;
     color: white;
     border: none;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -217,66 +245,15 @@ body {
 
 .current-bet {
     font-weight: bold;
-    font-size: 1.2rem;
-    color: #00ff00;
-    min-width: 150px;
+    min-width: 120px;
     text-align: center;
+    font-size: 1.1rem;
 }
 
-/* Spin Button */
-#spin-btn {
-    background: linear-gradient(135deg, #ff5722, #ff9800);
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border: none;
-    border-radius: 50px;
-    box-shadow: 0 5px 15px rgba(255,87,34,0.4);
-    transition: all 0.3s;
-    margin: 10px 0;
-}
-
-#spin-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(255,87,34,0.6);
-}
-
-/* Animations */
-@keyframes spin {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-2000px); }
-}
-
-.spinning .symbol {
-    animation: spin 0.1s linear infinite;
-}
-
-@keyframes winFlash {
-    0%, 100% { 
-        transform: scale(1);
-        box-shadow: 0 0 10px rgba(255,215,0,0.5);
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+    .bet-controls {
+        flex-direction: column;
+        gap: 10px;
     }
-    50% { 
-        transform: scale(1.1);
-        box-shadow: 0 0 20px gold;
-    }
-}
-
-.winning-symbol {
-    animation: winFlash 0.5s ease 3;
-    position: relative;
-    z-index: 2;
-}
-
-.winning-symbol::after {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    border-radius: 15px;
-    border: 2px solid gold;
-    z-index: -1;
 }
