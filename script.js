@@ -4,80 +4,147 @@ document.addEventListener('DOMContentLoaded', function() {
     const slotsTrigger = document.getElementById('slots-trigger');
     const closeModal = document.querySelector('.close-modal');
     
-    // Modal öffnen
+    // Slots Game Logic
+    const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '💰', '7️⃣', '⭐'];
+    const reels = [
+        document.getElementById('reel1'),
+        document.getElementById('reel2'),
+        document.getElementById('reel3'),
+        document.getElementById('reel4'),
+        document.getElementById('reel5'),
+        document.getElementById('reel6')
+    ];
+    const spinBtn = document.getElementById('spin-btn');
+    const balanceDisplay = document.getElementById('balance');
+    const resultDisplay = document.getElementById('slots-result');
+    const betAmountDisplay = document.getElementById('bet-amount');
+    const increaseBetBtn = document.getElementById('increase-bet');
+    const decreaseBetBtn = document.getElementById('decrease-bet');
+    
+    let balance = 1000;
+    let currentBet = 10;
+    let isSpinning = false;
+    
+    // Bet Controls
+    increaseBetBtn.addEventListener('click', () => {
+        if (currentBet < 100) {
+            currentBet += 5;
+            updateBetDisplay();
+        }
+    });
+    
+    decreaseBetBtn.addEventListener('click', () => {
+        if (currentBet > 5) {
+            currentBet -= 5;
+            updateBetDisplay();
+        }
+    });
+    
+    function updateBetDisplay() {
+        betAmountDisplay.textContent = currentBet;
+    }
+    
+    // Spin Functionality
+    spinBtn.addEventListener('click', function() {
+        if (isSpinning) return;
+        if (balance < currentBet) {
+            resultDisplay.textContent = "Nicht genug Guthaben!";
+            return;
+        }
+        
+        balance -= currentBet;
+        balanceDisplay.textContent = balance;
+        isSpinning = true;
+        resultDisplay.textContent = "";
+        
+        // Spin animation
+        const spinDuration = 2000 + Math.random() * 1000;
+        const results = [];
+        
+        reels.forEach((reel, index) => {
+            results.push(symbols[Math.floor(Math.random() * symbols.length)]);
+            
+            // Animation
+            let spinInterval = setInterval(() => {
+                reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            }, 100);
+            
+            // Stop animation
+            setTimeout(() => {
+                clearInterval(spinInterval);
+                reel.textContent = results[index];
+                
+                // Last reel - check win
+                if (index === reels.length - 1) {
+                    checkWin(results);
+                    isSpinning = false;
+                }
+            }, spinDuration - (index * 200));
+        });
+    });
+    
+    // Win Calculation
+    function checkWin(results) {
+        const symbolCounts = {};
+        
+        // Count matching symbols
+        results.forEach(symbol => {
+            symbolCounts[symbol] = (symbolCounts[symbol] || 0) + 1;
+        });
+        
+        let winAmount = 0;
+        
+        // Check for wins
+        Object.entries(symbolCounts).forEach(([symbol, count]) => {
+            if (count >= 3) {
+                const multiplier = getMultiplier(symbol);
+                winAmount += currentBet * multiplier * count;
+            }
+        });
+        
+        if (winAmount > 0) {
+            balance += winAmount;
+            balanceDisplay.textContent = balance;
+            resultDisplay.textContent = `Gewonnen: ${winAmount}€!`;
+            resultDisplay.style.color = "#4CAF50";
+            
+            // Highlight winning symbols
+            reels.forEach(reel => {
+                if (symbolCounts[reel.textContent] >= 3) {
+                    reel.classList.add('winning-symbol');
+                    setTimeout(() => {
+                        reel.classList.remove('winning-symbol');
+                    }, 2000);
+                }
+            });
+        } else {
+            resultDisplay.textContent = "Kein Gewinn. Versuch's nochmal!";
+            resultDisplay.style.color = "#f44336";
+        }
+    }
+    
+    function getMultiplier(symbol) {
+        const multipliers = {
+            '🍒': 1,
+            '🍋': 1.5,
+            '🍊': 2,
+            '🍇': 3,
+            '🍉': 4,
+            '💰': 5,
+            '7️⃣': 10,
+            '⭐': 15
+        };
+        return multipliers[symbol] || 1;
+    }
+    
+    // Modal handling
     slotsTrigger.addEventListener('click', () => {
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     });
     
-    // Modal schließen
     closeModal.addEventListener('click', () => {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
     });
-    
-    // Slots Game Logic
-    const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '💰', '7️⃣'];
-    const reel1 = document.getElementById('reel1');
-    const reel2 = document.getElementById('reel2');
-    const reel3 = document.getElementById('reel3');
-    const spinBtn = document.getElementById('spin-btn');
-    const balanceDisplay = document.getElementById('balance');
-    const resultDisplay = document.getElementById('slots-result');
-    
-    let balance = 100;
-    let isSpinning = false;
-    
-    spinBtn.addEventListener('click', function() {
-        if (isSpinning) return;
-        if (balance < 10) {
-            resultDisplay.textContent = "Nicht genug Guthaben!";
-            return;
-        }
-        
-        balance -= 10;
-        balanceDisplay.textContent = balance;
-        isSpinning = true;
-        resultDisplay.textContent = "";
-        
-        // Animation starten
-        reel1.classList.add('spinning');
-        reel2.classList.add('spinning');
-        reel3.classList.add('spinning');
-        
-        // Ergebnisse nach der Animation
-        setTimeout(() => {
-            reel1.classList.remove('spinning');
-            reel2.classList.remove('spinning');
-            reel3.classList.remove('spinning');
-            
-            const result1 = symbols[Math.floor(Math.random() * symbols.length)];
-            const result2 = symbols[Math.floor(Math.random() * symbols.length)];
-            const result3 = symbols[Math.floor(Math.random() * symbols.length)];
-            
-            reel1.textContent = result1;
-            reel2.textContent = result2;
-            reel3.textContent = result3;
-            
-            checkWin(result1, result2, result3);
-            isSpinning = false;
-        }, 2000);
-    });
-    
-    function checkWin(s1, s2, s3) {
-        if (s1 === '7️⃣' && s2 === '7️⃣' && s3 === '7️⃣') {
-            balance += 500;
-            resultDisplay.textContent = "JACKPOT! +500€";
-        } else if (s1 === s2 && s2 === s3) {
-            balance += 100;
-            resultDisplay.textContent = "GEWONNEN! +100€";
-        } else if (s1 === s2 || s2 === s3 || s1 === s3) {
-            balance += 20;
-            resultDisplay.textContent = "Kleiner Gewinn! +20€";
-        } else {
-            resultDisplay.textContent = "Kein Gewinn. Versuch's nochmal!";
-        }
-        
-        balanceDisplay.textContent = balance;
-    }
 });

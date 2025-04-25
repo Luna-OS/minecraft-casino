@@ -9,6 +9,7 @@
 body {
     background-color: #1a1a1a;
     color: #fff;
+    overflow-x: hidden;
 }
 
 /* Header */
@@ -19,6 +20,8 @@ body {
     padding: 1rem 2rem;
     background-color: #0e0e0e;
     border-bottom: 2px solid #2a2a2a;
+    position: relative;
+    z-index: 100;
 }
 
 .logo-container {
@@ -30,6 +33,11 @@ body {
 .logo-image {
     height: 40px;
     width: auto;
+    transition: transform 0.3s;
+}
+
+.logo-image:hover {
+    transform: scale(1.05);
 }
 
 .nav {
@@ -41,6 +49,23 @@ body {
     color: #fff;
     text-decoration: none;
     font-weight: 500;
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #00ff00;
+    transition: width 0.3s;
+}
+
+.nav-link:hover::after {
+    width: 100%;
 }
 
 .auth-buttons {
@@ -49,11 +74,12 @@ body {
 }
 
 .btn {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.5rem;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    transition: all 0.3s;
 }
 
 .login {
@@ -62,24 +88,38 @@ body {
     border: 1px solid #fff;
 }
 
+.login:hover {
+    background: rgba(255,255,255,0.1);
+}
+
 .signup, .cta {
     background: #00ff00;
     color: #000;
 }
 
+.signup:hover, .cta:hover {
+    background: #00cc00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,255,0,0.3);
+}
+
 /* Hauptbereich */
 .main-content {
     padding: 2rem;
+    position: relative;
+    z-index: 10;
 }
 
 .hero {
     text-align: center;
     margin-bottom: 3rem;
+    position: relative;
 }
 
 .hero h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .hero p {
@@ -91,7 +131,7 @@ body {
 /* Spiele-Grid */
 .games-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
@@ -100,13 +140,16 @@ body {
     padding: 2rem;
     border-radius: 8px;
     text-align: center;
-    transition: transform 0.3s;
+    transition: all 0.3s;
     cursor: pointer;
+    border: 1px solid #333;
 }
 
 .game-card:hover {
     transform: translateY(-5px);
     background: #333;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    border-color: #00ff00;
 }
 
 /* Footer */
@@ -117,6 +160,8 @@ body {
     margin-top: 2rem;
     font-size: 0.9rem;
     opacity: 0.7;
+    position: relative;
+    z-index: 10;
 }
 
 /* Modal Styles */
@@ -126,22 +171,31 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.9);
     z-index: 1000;
     display: none;
     justify-content: center;
     align-items: center;
+    backdrop-filter: blur(5px);
 }
 
 .modal-content {
-    background: #1a1a1a;
+    background: linear-gradient(145deg, #1a1a1a, #222);
     padding: 2rem;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
-    border: 2px solid #333;
+    border-radius: 15px;
+    width: 95%;
+    max-width: 600px;
+    border: 1px solid #00ff00;
     position: relative;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: 0 0 30px rgba(0,255,0,0.2);
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all 0.3s;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+    opacity: 1;
 }
 
 .close-modal {
@@ -151,32 +205,67 @@ body {
     font-size: 28px;
     color: #fff;
     cursor: pointer;
-    transition: color 0.3s;
+    transition: all 0.3s;
+    background: rgba(255,255,255,0.1);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
 }
 
 .close-modal:hover {
     color: #ff5722;
+    background: rgba(255,255,255,0.2);
+    transform: rotate(90deg);
 }
 
 /* Slots Styles */
 .slots-container {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
     margin: 20px 0;
+    perspective: 1000px;
 }
 
 .slots-reel {
     width: 80px;
     height: 80px;
-    background: #fff;
+    background: linear-gradient(145deg, #fff, #ddd);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 50px;
+    font-size: 40px;
     color: #000;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+}
+
+.slots-reel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+    z-index: 2;
+}
+
+.slots-reel::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+    z-index: 2;
 }
 
 .slots-controls {
@@ -184,35 +273,176 @@ body {
     margin-top: 20px;
 }
 
+.bet-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.bet-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #333;
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bet-btn:hover {
+    background: #444;
+    transform: scale(1.1);
+}
+
+.current-bet {
+    font-weight: bold;
+    color: #00ff00;
+    font-size: 1.1rem;
+    min-width: 120px;
+}
+
 .slots-balance {
     margin: 15px 0;
     font-weight: bold;
     color: #ffffff;
+    font-size: 1.1rem;
 }
 
 .slots-result {
     min-height: 24px;
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 15px;
     color: #ffcc00;
+    font-size: 1.1rem;
+    text-transform: uppercase;
 }
 
 #spin-btn {
-    background: #ff5722;
+    background: linear-gradient(to right, #ff5722, #ff7043);
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+#spin-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255,255,255,0.1);
+    transform: rotate(45deg);
     transition: all 0.3s;
 }
 
 #spin-btn:hover {
-    background: #ff7043;
+    background: linear-gradient(to right, #ff7043, #ff5722);
     transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(255,87,34,0.4);
 }
 
-/* Animation */
-@keyframes spin {
+#spin-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#spin-btn:hover::after {
+    left: 100%;
+}
+
+/* Animations */
+@keyframes reelSpin {
     0% { transform: translateY(0); }
     100% { transform: translateY(-1000px); }
 }
 
+@keyframes symbolFlash {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 10px gold;
+    }
+    50% { 
+        transform: scale(1.1); 
+        box-shadow: 0 0 20px gold;
+    }
+}
+
 .spinning {
-    animation: spin 0.5s cubic-bezier(0.1, 0.7, 0.1, 1) infinite;
+    animation: reelSpin 0.1s linear infinite;
+}
+
+.winning-symbol {
+    animation: symbolFlash 0.5s ease-in-out 3;
+    position: relative;
+    z-index: 1;
+}
+
+.winning-symbol::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 12px;
+    border: 2px solid gold;
+    z-index: -1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    .nav {
+        margin: 1rem 0;
+    }
+    
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .slots-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .slots-reel {
+        width: 70px;
+        height: 70px;
+        font-size: 35px;
+    }
+    
+    .modal-content {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .slots-reel {
+        width: 60px;
+        height: 60px;
+        font-size: 30px;
+    }
+    
+    .bet-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
 }

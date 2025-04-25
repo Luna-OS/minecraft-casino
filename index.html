@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M.A.N Casino</title>
+    <title>M.A.N Casino - Slots</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Header/Navigation -->
     <header class="header">
         <div class="logo-container">
-            <img src="/projects/minecraft/bilder/logo.png" alt="M.A.N Logo" class="logo-image">
+            <img src="logo.png" alt="M.A.N Logo" class="logo-image">
         </div>
         <nav class="nav">
             <a href="#" class="nav-link">Home</a>
@@ -25,44 +25,34 @@
 
     <!-- Hauptbereich -->
     <main class="main-content">
-        <section class="hero">
-            <h1>Welcome to M.A.N</h1>
-            <p>Play the fairest Germanminer casino games</p>
-            <button class="btn cta">Spielen</button>
-        </section>
-
-        <!-- Spiele-Kacheln -->
-        <div class="games-grid">
-            <div class="game-card">
-                <h3>Roulette</h3>
-            </div>
-            <div class="game-card">
-                <h3>Blackjack</h3>
-            </div>
-            <div class="game-card" id="slots-trigger">
-                <h3>Slots</h3>
-            </div>
-        </div>
+        <!-- ... bestehender Inhalt ... -->
     </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; M.A.N</p>
-    </footer>
 
     <!-- Slots Modal -->
     <div class="modal-overlay" id="slots-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2>Slots</h2>
+            <h2>Slots Deluxe</h2>
+            
             <div class="slots-container">
                 <div class="slots-reel" id="reel1">🍒</div>
                 <div class="slots-reel" id="reel2">🍋</div>
                 <div class="slots-reel" id="reel3">🍊</div>
+                <div class="slots-reel" id="reel4">🍇</div>
+                <div class="slots-reel" id="reel5">🍉</div>
+                <div class="slots-reel" id="reel6">💰</div>
             </div>
+            
             <div class="slots-controls">
-                <button id="spin-btn" class="btn cta">Spin (10€)</button>
-                <div class="slots-balance">Guthaben: <span id="balance">100</span>€</div>
+                <div class="bet-controls">
+                    <button id="decrease-bet" class="btn bet-btn">-</button>
+                    <div class="current-bet">Einsatz: <span id="bet-amount">10</span>€</div>
+                    <button id="increase-bet" class="btn bet-btn">+</button>
+                </div>
+                
+                <button id="spin-btn" class="btn cta">Spin</button>
+                
+                <div class="slots-balance">Guthaben: <span id="balance">1000</span>€</div>
                 <div id="slots-result" class="slots-result"></div>
             </div>
         </div>
