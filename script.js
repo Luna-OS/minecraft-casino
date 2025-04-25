@@ -4,6 +4,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const slotsTrigger = document.getElementById('slots-trigger');
     const closeModal = document.querySelector('.close-modal');
     
+    // Modal öffnen
+    slotsTrigger.addEventListener('click', () => {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    });
+    
+    // Modal schließen
+    closeModal.addEventListener('click', () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
     // Slots Game Logic
     const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '💰', '7️⃣', '⭐'];
     const reels = [
@@ -22,20 +34,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const decreaseBetBtn = document.getElementById('decrease-bet');
     
     let balance = 1000;
-    let currentBet = 10;
+    let currentBet = 50;
     let isSpinning = false;
-    
+    let spinIntervals = [];
+
     // Bet Controls
     increaseBetBtn.addEventListener('click', () => {
-        if (currentBet < 100) {
-            currentBet += 5;
+        if (currentBet < 500) {
+            currentBet += 50;
             updateBetDisplay();
         }
     });
     
     decreaseBetBtn.addEventListener('click', () => {
-        if (currentBet > 5) {
-            currentBet -= 5;
+        if (currentBet > 50) {
+            currentBet -= 50;
             updateBetDisplay();
         }
     });
@@ -43,12 +56,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateBetDisplay() {
         betAmountDisplay.textContent = currentBet;
     }
-    
+
     // Spin Functionality
     spinBtn.addEventListener('click', function() {
         if (isSpinning) return;
         if (balance < currentBet) {
             resultDisplay.textContent = "Nicht genug Guthaben!";
+            resultDisplay.style.color = "#f44336";
             return;
         }
         
@@ -56,64 +70,115 @@ document.addEventListener('DOMContentLoaded', function() {
         balanceDisplay.textContent = balance;
         isSpinning = true;
         resultDisplay.textContent = "";
+        resultDisplay.style.color = "#ffcc00";
         
-        // Spin animation
-        const spinDuration = 2000 + Math.random() * 1000;
-        const results = [];
+        // Clear any previous intervals
+        spinIntervals.forEach(interval => clearInterval(interval));
+        spinIntervals = [];
         
+        // Start spinning animation for each reel
         reels.forEach((reel, index) => {
-            results.push(symbols[Math.floor(Math.random() * symbols.length)]);
+            const symbolsContainer = reel.querySelector('.symbols-container');
+            const spinDuration = 2000 + (index * 300); // Staggered stopping
             
-            // Animation
-            let spinInterval = setInterval(() => {
-                reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-            }, 100);
+            // Create temporary symbols for animation
+            symbolsContainer.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const symbol = document.createElement('div');
+                symbol.className = 'symbol';
+                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                symbolsContainer.appendChild(symbol);
+            }
             
-            // Stop animation
-            setTimeout(() => {
-                clearInterval(spinInterval);
-                reel.textContent = results[index];
+            // Start animation
+            let position = 0;
+            const speed = 5;
+            
+            const interval = setInterval(() => {
+                position += speed;
+                symbolsContainer.style.transform = `translateY(-${position}px)`;
                 
-                // Last reel - check win
-                if (index === reels.length - 1) {
-                    checkWin(results);
-                    isSpinning = false;
+                // Add more symbols if we're running out
+                if (position > symbolsContainer.children.length * 80 / 3) {
+                    const symbol = document.createElement('div');
+                    symbol.className = 'symbol';
+                    symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                    symbolsContainer.appendChild(symbol);
                 }
-            }, spinDuration - (index * 200));
+            }, 16);
+            
+            spinIntervals.push(interval);
+            
+            // Stop this reel after its duration
+            setTimeout(() => {
+                clearInterval(interval);
+                stopReel(reel, index);
+            }, spinDuration);
         });
+        
+        // Final check after all reels stop
+        setTimeout(() => {
+            isSpinning = false;
+        }, 3000);
     });
     
-    // Win Calculation
-    function checkWin(results) {
-        const symbolCounts = {};
+    function stopReel(reel, reelIndex) {
+        const symbolsContainer = reel.querySelector('.symbols-container');
+        const result = symbols[Math.floor(Math.random() * symbols.length)];
         
-        // Count matching symbols
+        // Create final display with result symbol centered
+        symbolsContainer.innerHTML = `
+            <div class="symbol">${symbols[Math.floor(Math.random() * symbols.length)]}</div>
+            <div class="symbol">${symbols[Math.floor(Math.random() * symbols.length)]}</div>
+            <div class="symbol winning">${result}</div>
+            <div class="symbol">${symbols[Math.floor(Math.random() * symbols.length)]}</div>
+            <div class="symbol">${symbols[Math.floor(Math.random() * symbols.length)]}</div>
+        `;
+        
+        symbolsContainer.style.transform = 'translateY(-160px)';
+        
+        // If this is the last reel, check for wins
+        if (reelIndex === reels.length - 1) {
+            setTimeout(() => {
+                checkWin();
+            }, 500);
+        }
+    }
+    
+    function checkWin() {
+        const results = reels.map(reel => {
+            return reel.querySelector('.winning').textContent;
+        });
+        
+        const symbolCounts = {};
         results.forEach(symbol => {
             symbolCounts[symbol] = (symbolCounts[symbol] || 0) + 1;
         });
         
         let winAmount = 0;
+        let winningSymbols = [];
         
-        // Check for wins
         Object.entries(symbolCounts).forEach(([symbol, count]) => {
             if (count >= 3) {
                 const multiplier = getMultiplier(symbol);
                 winAmount += currentBet * multiplier * count;
+                winningSymbols.push(symbol);
             }
         });
         
         if (winAmount > 0) {
             balance += winAmount;
             balanceDisplay.textContent = balance;
-            resultDisplay.textContent = `Gewonnen: ${winAmount}€!`;
+            resultDisplay.textContent = `GEWONNEN! +${winAmount}€`;
             resultDisplay.style.color = "#4CAF50";
             
             // Highlight winning symbols
             reels.forEach(reel => {
-                if (symbolCounts[reel.textContent] >= 3) {
-                    reel.classList.add('winning-symbol');
+                const winningSymbol = reel.querySelector('.winning');
+                if (winningSymbols.includes(winningSymbol.textContent)) {
+                    winningSymbol.classList.add('winning-animation');
                     setTimeout(() => {
-                        reel.classList.remove('winning-symbol');
+                        winningSymbol.classList.remove('winning-animation');
                     }, 2000);
                 }
             });
@@ -126,25 +191,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function getMultiplier(symbol) {
         const multipliers = {
             '🍒': 1,
-            '🍋': 1.5,
-            '🍊': 2,
-            '🍇': 3,
-            '🍉': 4,
-            '💰': 5,
-            '7️⃣': 10,
-            '⭐': 15
+            '🍋': 2,
+            '🍊': 3,
+            '🍇': 5,
+            '🍉': 8,
+            '💰': 10,
+            '7️⃣': 15,
+            '⭐': 20
         };
         return multipliers[symbol] || 1;
     }
-    
-    // Modal handling
-    slotsTrigger.addEventListener('click', () => {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    });
-    
-    closeModal.addEventListener('click', () => {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    });
 });
