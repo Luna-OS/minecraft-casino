@@ -184,10 +184,18 @@ body {
     padding: 2rem;
     border-radius: 15px;
     width: 95%;
-    max-width: 600px;
+    max-width: 500px;
     border: 1px solid #00ff00;
     position: relative;
     box-shadow: 0 0 30px rgba(0,255,0,0.2);
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all 0.3s;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+    opacity: 1;
 }
 
 .close-modal {
@@ -215,10 +223,11 @@ body {
 
 /* Slots Styles */
 .slots-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
     margin: 20px 0;
+    perspective: 1000px;
 }
 
 .slots-reel {
@@ -229,47 +238,39 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 40px;
+    font-size: 50px;
     color: #000;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     position: relative;
     overflow: hidden;
+    transform-style: preserve-3d;
+}
+
+.slots-reel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+    z-index: 2;
+}
+
+.slots-reel::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+    z-index: 2;
 }
 
 .slots-controls {
     text-align: center;
     margin-top: 20px;
-}
-
-.bet-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.bet-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #333;
-    color: white;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.bet-btn:hover {
-    background: #444;
-}
-
-.current-bet {
-    font-weight: bold;
-    color: #00ff00;
-    font-size: 1.1rem;
-    min-width: 120px;
 }
 
 .slots-balance {
@@ -296,6 +297,20 @@ body {
     border: none;
     text-transform: uppercase;
     letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+#spin-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255,255,255,0.1);
+    transform: rotate(45deg);
+    transition: all 0.3s;
 }
 
 #spin-btn:hover {
@@ -304,23 +319,27 @@ body {
     box-shadow: 0 5px 15px rgba(255,87,34,0.4);
 }
 
+#spin-btn:hover::after {
+    left: 100%;
+}
+
 /* Animations */
-@keyframes spin {
+@keyframes reelSpin {
     0% { transform: translateY(0); }
     100% { transform: translateY(-1000px); }
 }
 
+@keyframes symbolFlash {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(0.95); }
+}
+
 .spinning {
-    animation: spin 0.1s linear infinite;
+    animation: reelSpin 0.1s linear infinite;
 }
 
 .winning-symbol {
-    animation: pulse 0.5s ease-in-out 3;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    animation: symbolFlash 0.5s ease-in-out 3;
 }
 
 /* Responsive Design */
@@ -338,26 +357,9 @@ body {
         grid-template-columns: 1fr;
     }
     
-    .slots-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .slots-reel {
-        width: 70px;
-        height: 70px;
-        font-size: 35px;
-    }
-}
-
-@media (max-width: 480px) {
     .slots-reel {
         width: 60px;
         height: 60px;
-        font-size: 30px;
-    }
-    
-    .bet-controls {
-        flex-direction: column;
-        gap: 10px;
+        font-size: 40px;
     }
 }
